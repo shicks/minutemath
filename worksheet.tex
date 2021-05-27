@@ -1,0 +1,107 @@
+\documentclass[12pt]{article}
+\usepackage{fullpage}
+%\usepackage{random}
+\pagestyle{empty}
+
+\newbox\lineA
+\newbox\lineB
+\newdimen\vertWid
+
+\newcount\numA
+\newcount\numB
+\newcount\numOp
+
+\def\vertsum#1#2{%
+  \setbox\lineA\hbox{$\,#1\,$}%
+  \setbox\lineB\hbox{$\,#2\,$}%
+  \vertWid\ifdim\wd\lineA>\wd\lineB\wd\lineA\else\wd\lineB\fi
+  \setbox\lineA\hbox to \vertWid{\hss\unhbox\lineA}%
+  \setbox\lineB\hbox to \vertWid{\hss\unhbox\lineB}%
+  \setbox\lineA\vbox{\box\lineA\box\lineB\vskip0.3ex\hrule\vskip1.5pc\strut}%
+  \wd\lineA\vertWid
+  \box\lineA
+}
+
+% Usage: \oneof{\a\b...} expands to one random token in the list
+\def\oneof#1{%
+  \begingroup\def\empty{}%
+  \count0 0\relax
+  \oneofcount#1\oneofcount
+  \count0 \pdfuniformdeviate\count0\relax
+  \def\pick{\oneofpick}%
+  \oneofpick#1\oneofpick
+}
+\def\oneofcount#1{\ifx#1\oneofcount\else\advance\count0 1\relax\expandafter\oneofcount\fi}
+\def\oneofpick#1{%
+  \ifnum\count0>0%
+    \advance\count0 -1\relax
+  \else
+    \def\pick##1\oneofpick{\endgroup#1}%
+  \fi
+  \pick
+}
+
+% Usage: \unique{computation}{check}
+% Runs the computation until the check returns a unique value
+\def\unique#1#2{%
+  #1\begingroup
+  \edef\z{!unique!#2!}%
+  \ifcsname\z\endcsname
+    \def\y{\unique{#1}{#2}}%
+  \else
+    \edef\y{\let\csname\z\endcsname\relax}%
+  \fi
+  \expandafter\endgroup\y
+}
+
+\def\prob{\oneof{%
+    %\probAdd
+    \probAddCarry
+    %\probSub
+}}
+
+\def\probAdd{%
+  \unique{%
+    \numA\pdfuniformdeviate10\relax
+    \numB\pdfuniformdeviate10\relax
+  }{\the\numA+\the\numB}%
+  \vertsum{\the\numA}{+\ \the\numB}%
+}
+\def\probAddCarry{%
+  \unique{%
+    \numA\pdfuniformdeviate80\relax
+    \numB\pdfuniformdeviate\numA\relax
+    \advance\numA-90\relax
+    \advance\numB10\relax
+    \numA-\numA\relax
+  }{\the\numA+\the\numB}%
+  \vertsum{\the\numA}{+\ \the\numB}%
+}
+\def\probSub{%
+  \unique{%
+    \numA\pdfuniformdeviate19\relax
+    \numB\pdfuniformdeviate\numA\relax
+    \advance\numA1\relax
+    \advance\numB1\relax
+  }{\the\numA-\the\numB}%
+  \vertsum{\the\numA}{-\ \the\numB}%
+}
+
+\def\probLine{%
+  \hbox to\hsize{\prob\hss\prob\hss\prob\hss\prob\hss\prob}%
+  \vskip 1pc
+}
+
+\begin{document}
+\Large
+\setbox0\hbox{Name: \ Time: \hskip 3em}%
+\dimen0\wd0%
+\hbox{Name: \underline{\hskip\dimexpr\textwidth-\dimen0}\ Time: \underline{\hskip 3em}}
+\vskip2pc
+\Huge
+\probLine
+\probLine
+\probLine
+\probLine
+\probLine
+\end{document}
