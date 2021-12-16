@@ -17,7 +17,7 @@
   \vertWid\ifdim\wd\lineA>\wd\lineB\wd\lineA\else\wd\lineB\fi
   \setbox\lineA\hbox to \vertWid{\hss\unhbox\lineA}%
   \setbox\lineB\hbox to \vertWid{\hss\unhbox\lineB}%
-  \setbox\lineA\vbox{\box\lineA\box\lineB\vskip0.3ex\hrule\vskip1.5pc\strut}%
+  \setbox\lineA\vbox{\box\lineA\vskip-0.5ex\box\lineB\vskip0.3ex\hrule\vskip1.5pc\strut}%
   \wd\lineA\vertWid
   \box\lineA
 }
@@ -58,6 +58,7 @@
     %\probAdd
     \probAddCarry
     %\probSub
+    \probSubCarry
 }}
 
 \def\probAdd{%
@@ -69,13 +70,14 @@
 }
 \def\probAddCarry{%
   \unique{%
-    \numA\pdfuniformdeviate80\relax
+    \numA\pdfuniformdeviate800\relax
     \numB\pdfuniformdeviate\numA\relax
-    \advance\numA-90\relax
-    \advance\numB10\relax
-    \numA-\numA\relax
+    \advance\numA-\numB\relax
+    \advance\numA100\relax
+    \advance\numB100\relax
+    %\numA-\numA\relax
   }{\the\numA+\the\numB}%
-  \vertsum{\the\numA}{+\ \the\numB}%
+  \vertsum{\the\numA}{+$\,$\the\numB}%
 }
 \def\probSub{%
   \unique{%
@@ -86,10 +88,19 @@
   }{\the\numA-\the\numB}%
   \vertsum{\the\numA}{-\ \the\numB}%
 }
+\def\probSubCarry{%
+  \unique{%
+    \numA\pdfuniformdeviate800\relax
+    \numB\pdfuniformdeviate\numA\relax
+    \advance\numA200\relax
+    \advance\numB100\relax
+  }{\the\numA-\the\numB}%
+  \vertsum{\the\numA}{-$\,$\the\numB}%
+}
 
 \def\probLine{%
   \hbox to\hsize{\prob\hss\prob\hss\prob\hss\prob\hss\prob}%
-  \vskip 1pc
+  \vskip 1.5pc
 }
 
 \begin{document}
